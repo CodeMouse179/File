@@ -1,7 +1,7 @@
 ﻿//     +--------------------------------------------------------------------------------+
 //     |                                       File                                     |
 //     |  Introduction : System.IO.File in C++                                          |
-//     |  Modified Date : 2022/12/2                                                     |
+//     |  Modified Date : 2022/12/3                                                     |
 //     |  License : MIT                                                                 |
 //     |  Source Code : https://github.com/CodeMouse179/File                            |
 //     |  Readme : https://github.com/CodeMouse179/File/blob/main/README.md             |
