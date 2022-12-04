@@ -6,5 +6,6 @@ project(SystemIOFile)
 
 add_executable(f
     File.hpp
+    String.hpp
     Example.cpp
 )
