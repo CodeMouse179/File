@@ -17,6 +17,10 @@
 
 #include "String.hpp"
 
+#ifdef SYSTEM_LINUX
+#include <sys/stat.h>
+#endif
+
 namespace System
 {
     namespace IO
@@ -100,6 +104,23 @@ namespace System
                 }
 #endif
 #ifdef SYSTEM_LINUX
+                struct stat att;
+                int ret = stat(path.c_str(), &att);
+                if (ret != 0)
+                {
+                    fatt.Invalid = true;
+                }
+                else
+                {
+                    if (S_ISDIR(att.st_mode))
+                    {
+                        fatt.IsDirectory = true;
+                    }
+                    if (S_ISREG(att.st_mode))
+                    {
+                        fatt.IsArchive = true;
+                    }
+                }
 #endif
                 return fatt;
             }
