@@ -124,6 +124,28 @@ namespace System
 #endif
                 return fatt;
             }
+
+        public:
+            static std::string CurrentDirectory()
+            {
+                std::string result;
+#ifdef SYSTEM_WINDOWS
+                const int bufferSize = 1024;
+                wchar_t buffer[bufferSize];
+                DWORD ret = GetModuleFileNameW(NULL, buffer, bufferSize);
+                if (ret == 0) return StringA::Empty();
+                std::wstring temp = buffer;
+                size_t pos = temp.find_last_of(W('\\'));
+                if (pos != std::string::npos)
+                {
+                    temp = temp.substr(0, pos);
+                }
+                result = StringA::WstringToString(temp, System::StringEncoding::UTF8);
+#endif
+#ifdef SYSTEM_LINUX
+#endif
+                return result;
+            }
         };
     }
 }
