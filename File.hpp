@@ -18,7 +18,8 @@
 #include "String.hpp"
 
 #ifdef SYSTEM_LINUX
-#include <sys/stat.h>
+#include <unistd.h>     //readlink
+#include <sys/stat.h>   //stat
 #endif
 
 namespace System
@@ -143,6 +144,16 @@ namespace System
                 result = StringA::WstringToString(temp, System::StringEncoding::UTF8);
 #endif
 #ifdef SYSTEM_LINUX
+                const int bufferSize = 4096;
+                char exePath[bufferSize];
+                ssize_t ret = readlink("/proc/self/exe", exePath, bufferSize);
+                if (ret == -1) return StringA::Empty();
+                result = exePath;
+                size_t pos = result.find_last_of('/');
+                if (pos != std::string::npos)
+                {
+                    result = result.substr(0, pos);
+                }
 #endif
                 return result;
             }
