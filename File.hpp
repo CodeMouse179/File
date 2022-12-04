@@ -80,14 +80,7 @@ namespace System
 #ifdef SYSTEM_IO_FILE_ONLY_UTF8
                 pathW = StringA::StringToWstring(path, System::StringEncoding::UTF8);
 #else
-                if (StringA::IsValidUTF8(path))
-                {
-                    pathW = StringA::StringToWstring(path, System::StringEncoding::UTF8);
-                }
-                else
-                {
-                    pathW = StringA::StringToWstring(path, System::StringEncoding::ANSI);
-                }
+                pathW = StringA::StringToWstring2(path);
 #endif
                 DWORD att = GetFileAttributesW(pathW.c_str());
                 if (att == INVALID_FILE_ATTRIBUTES)
