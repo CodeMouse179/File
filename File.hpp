@@ -239,6 +239,67 @@ namespace System
 #endif
                 return result;
             }
+
+            template<typename T>
+            static std::basic_string<T> Combine(const std::basic_string<T>& path1, const std::basic_string<T>& path2)
+            {
+                if (path1.empty()) return System::String<T>::Empty();
+                if (path2.empty()) return path1;
+                std::basic_string<T> path;
+#ifdef SYSTEM_WINDOWS
+                if (path1.back() == (T)'/' || path1.back() == (T)'\\')
+                {
+                    if (path2.front() == (T)'/' || path2.front() == (T)'\\')
+                    {
+                        path = path1 + path2.substr(1, path2.size() - 1);
+                    }
+                    else
+                    {
+                        path = path1 + path2;
+                    }
+                }
+                else
+                {
+                    if (path2.front() == (T)'/' || path2.front() == (T)'\\')
+                    {
+                        path = path1 + path2;
+                    }
+                    else
+                    {
+                        path = path1;
+                        path.push_back((T)'\\');
+                        path += path2;
+                    }
+                }
+#endif
+#ifdef SYSTEM_LINUX
+                if (path1.back() == (T)'/')
+                {
+                    if (path2.front() == (T)'/')
+                    {
+                        path = path1 + path2.substr(1, path2.size() - 1);
+                    }
+                    else
+                    {
+                        path = path1 + path2;
+                    }
+                }
+                else
+                {
+                    if (path2.front() == (T)'/')
+                    {
+                        path = path1 + path2;
+                    }
+                    else
+                    {
+                        path = path1;
+                        path.push_back((T)'/');
+                        path += path2;
+                    }
+                }
+#endif
+                return path;
+            }
         };
     }
 }
