@@ -161,6 +161,53 @@ namespace System
                 return fatt;
             }
 
+            static bool WriteAllBytes(const std::string& path, const std::vector<unsigned char>& bytes)
+            {
+#ifdef SYSTEM_WINDOWS
+                std::wstring pathW;
+#ifdef SYSTEM_IO_FILE_ONLY_UTF8
+                pathW = StringA::StringToWstring(path, System::StringEncoding::UTF8);
+#else
+                pathW = StringA::StringToWstring2(path);
+#endif
+                //create a new file or overwrite existing file:
+                HANDLE fileHandle = CreateFileW(pathW.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+                if (fileHandle == INVALID_HANDLE_VALUE) return false;
+                //write bytes:
+                DWORD written;
+                BOOL writeRet = WriteFile(fileHandle, bytes.data(), bytes.size(), &written, NULL);
+                if (!writeRet)
+                {
+                    //close file before return:
+                    CloseHandle(fileHandle);
+                    return false;
+                }
+                //close file normally:
+                BOOL closeRet = CloseHandle(fileHandle);
+                if (!closeRet) return false;
+                //write success:
+                return true;
+#endif
+#ifdef SYSTEM_LINUX
+                //create a new file or overwrite existing file:
+                int fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+                if (fd == -1) return false;
+                //write bytes:
+                ssize_t writeRet = write(fd, bytes.data(), bytes.size());
+                if (writeRet == -1)
+                {
+                    //close file before return:
+                    close(fd);
+                    return false;
+                }
+                //close file normally:
+                int ret = close(fd);
+                if (ret == -1) return false;
+                //write success:
+                return true;
+#endif
+            }
+
         public:
             static std::string CurrentDirectory()
             {
