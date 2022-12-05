@@ -11,3 +11,5 @@
 1. [Create a file in Linux using C](https://stackoverflow.com/questions/2395465/create-a-file-in-linux-using-c)
 
 1. [linux open function](https://pubs.opengroup.org/onlinepubs/9699919799/functions/open.html)
+
+1. [linux unlink function](https://linux.die.net/man/2/unlink)

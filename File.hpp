@@ -67,7 +67,7 @@ namespace System
 #ifdef SYSTEM_WINDOWS
                 std::wstring pathW;
 #ifdef SYSTEM_IO_FILE_ONLY_UTF8
-                pathW = StringA::StringToWstring(path,System::StringEncoding::UTF8);
+                pathW = StringA::StringToWstring(path, System::StringEncoding::UTF8);
 #else
                 pathW = StringA::StringToWstring2(path);
 #endif
@@ -88,7 +88,21 @@ namespace System
 
             static bool Delete(const std::string& path)
             {
-                return false;
+#ifdef SYSTEM_WINDOWS
+                std::wstring pathW;
+#ifdef SYSTEM_IO_FILE_ONLY_UTF8
+                pathW = StringA::StringToWstring(path, System::StringEncoding::UTF8);
+#else
+                pathW = StringA::StringToWstring2(path);
+#endif
+                BOOL ret = DeleteFileW(pathW.c_str());
+                return ret;
+#endif
+#ifdef SYSTEM_LINUX
+                int ret = unlink(path.c_str());
+                if (ret == -1) return false;
+                return true;
+#endif
             }
 
             static bool Exists(const std::string& path)
