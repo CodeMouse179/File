@@ -161,6 +161,126 @@ namespace System
                 return fatt;
             }
 
+            static std::vector<unsigned char> ReadAllBytes(const std::string& path)
+            {
+                std::vector<unsigned char> data;
+#ifdef SYSTEM_WINDOWS
+                std::wstring pathW;
+#ifdef SYSTEM_IO_FILE_ONLY_UTF8
+                pathW = StringA::StringToWstring(path, System::StringEncoding::UTF8);
+#else
+                pathW = StringA::StringToWstring2(path);
+#endif
+                //open a existing file:
+                HANDLE fileHandle = CreateFileW(pathW.c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+                if (fileHandle == INVALID_HANDLE_VALUE) return data;
+                //get file size:
+                LARGE_INTEGER large;
+                BOOL sizeRet = GetFileSizeEx(fileHandle, &large);
+                if (!sizeRet)
+                {
+                    //close file before return:
+                    CloseHandle(fileHandle);
+                    return data;
+                }
+                //new buffer:
+                int bufferSize = large.QuadPart;
+                unsigned char* buffer = new unsigned char[bufferSize];
+                if (buffer == nullptr)
+                {
+                    //close file before return:
+                    CloseHandle(fileHandle);
+                    return data;
+                }
+                ZeroMemory(buffer, bufferSize);
+                //read bytes:
+                DWORD read;
+                BOOL readRet = ReadFile(fileHandle, buffer, bufferSize, &read, NULL);
+                if (!readRet)
+                {
+                    delete[] buffer;
+                    //close file before return:
+                    CloseHandle(fileHandle);
+                    return data;
+                }
+                //close file normally:
+                BOOL closeRet = CloseHandle(fileHandle);
+                if (!closeRet)
+                {
+                    delete[] buffer;
+                    return data;
+                }
+                //copy value:
+                for (int i = 0; i < read; i++)
+                {
+                    data.push_back(buffer[i]);
+                }
+                //delete buffer:
+                delete[] buffer;
+                //read success!
+#endif
+#ifdef SYSTEM_LINUX
+                //open a existing file:
+                int fd = open(path.c_str(), O_RDONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+                if (fd == -1) return data;
+                //get file size:
+                struct stat att;
+                int statRet = stat(path.c_str(), &att);
+                if (statRet != 0)
+                {
+                    //close file before return:
+                    close(fd);
+                    return data;
+                }
+                //new buffer:
+                int bufferSize = att.st_size;
+                unsigned char* buffer = new unsigned char[bufferSize];
+                if (buffer == nullptr)
+                {
+                    //close file before return:
+                    close(fd);
+                    return data;
+                }
+                memset(buffer, 0, bufferSize);
+                //read bytes:
+                ssize_t readRet = read(fd, buffer, bufferSize);
+                if (readRet == -1)
+                {
+                    delete[] buffer;
+                    //close file before return:
+                    close(fd);
+                    return data;
+                }
+                //close file normally:
+                int closeRet = close(fd);
+                if (closeRet == -1)
+                {
+                    delete[] buffer;
+                    return data;
+                }
+                //copy value:
+                for (int i = 0; i < readRet; i++)
+                {
+                    data.push_back(buffer[i]);
+                }
+                //delete buffer:
+                delete[] buffer;
+                //read success!
+#endif
+                return data;
+            }
+
+            static std::string ReadAllText(const std::string& path)
+            {
+                std::vector<unsigned char> data = File::ReadAllBytes(path);
+                std::string s;
+                for (int i = 0; i < data.size(); i++)
+                {
+                    s.push_back((char)data[i]);
+                }
+                return s;
+            }
+
             static bool WriteAllBytes(const std::string& path, const std::vector<unsigned char>& bytes)
             {
 #ifdef SYSTEM_WINDOWS

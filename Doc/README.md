@@ -13,3 +13,7 @@
 1. [linux open function](https://pubs.opengroup.org/onlinepubs/9699919799/functions/open.html)
 
 1. [linux unlink function](https://linux.die.net/man/2/unlink)
+
+1. [linux open function](https://linux.die.net/man/3/open)
+
+1. [How can I get a file's size in C?](https://stackoverflow.com/questions/238603/how-can-i-get-a-files-size-in-c)

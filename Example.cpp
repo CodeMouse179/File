@@ -15,6 +15,8 @@ int main()
     std::string filePath3 = File::Combine(workDirectory, std::string(U8("/res/Linux系统文件.txt")));
 #endif
     File::WriteAllText(filePath3, U8("你好世界😄"));
+    std::string content = File::ReadAllText(filePath3);
+    StringA::WriteLine(content);
     bool exists1 = File::Exists(filePath1);
     bool exists2 = File::Exists(filePath2);
     StringA::WriteLine(std::to_string(exists1));
