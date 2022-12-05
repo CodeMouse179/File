@@ -7,3 +7,7 @@
 1. [Checking if a file is a directory or just a file](https://stackoverflow.com/questions/4553012/checking-if-a-file-is-a-directory-or-just-a-file)
 
 1. [How to find the full path of the C++ Linux program from within?](https://stackoverflow.com/questions/7051844/how-to-find-the-full-path-of-the-c-linux-program-from-within)
+
+1. [Create a file in Linux using C](https://stackoverflow.com/questions/2395465/create-a-file-in-linux-using-c)
+
+1. [linux open function](https://pubs.opengroup.org/onlinepubs/9699919799/functions/open.html)
