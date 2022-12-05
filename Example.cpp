@@ -14,11 +14,7 @@ int main()
     std::string filePath2 = File::Combine(workDirectory, std::string(U8("/res/测试文件1.txt")));
     std::string filePath3 = File::Combine(workDirectory, std::string(U8("/res/Linux系统文件.txt")));
 #endif
-    std::vector<unsigned char> data;
-    data.push_back(97);
-    data.push_back(98);
-    data.push_back(99);
-    File::WriteAllBytes(filePath3, data);
+    File::WriteAllText(filePath3, U8("你好世界😄"));
     bool exists1 = File::Exists(filePath1);
     bool exists2 = File::Exists(filePath2);
     StringA::WriteLine(std::to_string(exists1));

@@ -208,6 +208,29 @@ namespace System
 #endif
             }
 
+            static bool WriteAllText(const std::string& path, const std::string& contents)
+            {
+                std::string utf8String;
+#ifdef SYSTEM_IO_FILE_ONLY_UTF8
+                utf8String = contents;
+#else
+                if (!StringA::IsValidUTF8(contents))
+                {
+                    utf8String = StringA::ConvertString(contents, System::StringEncoding::ANSI, System::StringEncoding::UTF8);
+                }
+                else
+                {
+                    utf8String = contents;
+                }
+#endif
+                std::vector<unsigned char> data;
+                for (int i = 0; i < utf8String.size(); i++)
+                {
+                    data.push_back((unsigned char)utf8String[i]);
+                }
+                return File::WriteAllBytes(path, data);
+            }
+
         public:
             static std::string CurrentDirectory()
             {
