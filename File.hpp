@@ -1,7 +1,7 @@
 ﻿//     +--------------------------------------------------------------------------------+
 //     |                                       File                                     |
 //     |  Introduction : System.IO.File in C++                                          |
-//     |  Modified Date : 2022/12/4                                                     |
+//     |  Modified Date : 2022/12/5                                                     |
 //     |  License : MIT                                                                 |
 //     |  Source Code : https://github.com/CodeMouse179/File                            |
 //     |  Readme : https://github.com/CodeMouse179/File/blob/main/README.md             |
@@ -18,8 +18,9 @@
 #include "String.hpp"
 
 #ifdef SYSTEM_LINUX
-#include <unistd.h>     //readlink
+#include <unistd.h>     //readlink, close
 #include <sys/stat.h>   //stat
+#include <fcntl.h>      //open
 #endif
 
 namespace System
@@ -60,9 +61,29 @@ namespace System
                 return false;
             }
 
+            //return 1 on success, return 0 on fail.
             static int Create(const std::string& path)
             {
-                return 0;
+#ifdef SYSTEM_WINDOWS
+                std::wstring pathW;
+#ifdef SYSTEM_IO_FILE_ONLY_UTF8
+                pathW = StringA::StringToWstring(path,System::StringEncoding::UTF8);
+#else
+                pathW = StringA::StringToWstring2(path);
+#endif
+                HANDLE fileHandle = CreateFileW(pathW.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+                if (fileHandle == INVALID_HANDLE_VALUE) return 0;
+                BOOL closeRet = CloseHandle(fileHandle);
+                if (!closeRet) return 0;
+                return 1;
+#endif
+#ifdef SYSTEM_LINUX
+                int fd = open(path.c_str(), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+                if (fd == -1) return 0;
+                int ret = close(fd);
+                if (ret == -1) return 0;
+                return 1;
+#endif
             }
 
             static bool Delete(const std::string& path)
