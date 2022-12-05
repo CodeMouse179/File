@@ -21,6 +21,7 @@
 #include <unistd.h>     //readlink, close
 #include <sys/stat.h>   //stat
 #include <fcntl.h>      //open
+#include <cstring>      //memset
 #endif
 
 namespace System
@@ -241,7 +242,7 @@ namespace System
                     close(fd);
                     return data;
                 }
-                memset(buffer, 0, bufferSize);
+                std::memset(buffer, 0, bufferSize);
                 //read bytes:
                 ssize_t readRet = read(fd, buffer, bufferSize);
                 if (readRet == -1)
